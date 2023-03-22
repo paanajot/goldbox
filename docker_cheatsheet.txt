@@ -1,0 +1,40 @@
+############# Dockerfile linter #############
+docker run --rm -i hadolint/hadolint < Dockerfile
+
+############# Clean up #############
+# Remove all unused containers, networks, images and optionally, volumes.
+# -a remove all unused images not just dangling ones
+# --volume prune volumes
+docker system prune [--volumes] [-a]
+
+# Remove all containers
+docker rm -f $(docker ps -a -q)
+
+# Stop all running containers
+docker stop $(docker ps -q)
+
+# Delete stopped containers
+docker container prune
+
+# Delete all the images
+docker image prune [-a]
+
+############# Basic commands #############
+# Attach local standard input, output, and error streams to a running container
+docker attach [OPTIONS] CONTAINER
+
+# Run commands in a container.
+docker exec [options] CONTAINER COMMAND
+
+############# Create, start, run #############
+# Create, start and run all sound pretty similar but they each have their own distinct roles.
+
+Create adds a writeable container on top of your image and sets it up for running whatever
+command you specified in your CMD. The container ID is reported back but it’s not started.
+
+Start will start any stopped containers. This includes freshly created containers.
+
+Run is a combination of create and start. It creates the container and starts it.
+
+# Example
+docker container run -it [docker_image] /bin/bash

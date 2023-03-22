@@ -1,0 +1,31 @@
+Checks: 'clang-analyzer-*,
+         bugprone-*,
+         readability-make-member-function-const,
+         readability-identifier-naming,
+         readability-magic-numbers,
+         readability-non-const-parameter,
+         readability-container-contains,
+         google-explicit-constructor,
+         google-upgrade-googletest-case,
+         llvm-include-order,
+         modernize-avoid-bind,
+         modernize-deprecated-headers,
+         modernize-loop-convert,
+         modernize-redundant-void-arg,
+         modernize-replace-auto-ptr,
+         modernize-shrink-to-fit,
+         modernize-use-auto,
+         modernize-use-bool-literals,
+         modernize-use-default,
+         modernize-use-emplace,
+         modernize-use-nullptr,
+         modernize-use-override,
+         modernize-use-using'
+
+CheckOptions:
+  - { key: readability-identifier-naming.PrivateMemberPrefix,  value: m_  }
+  - { key: readability-identifier-naming.FunctionCase,  value: lower_case }
+  - { key: readability-identifier-naming.VariableCase,  value: lower_case }
+  - { key: readability-identifier-naming.ParameterCase, value: lower_case }
+  - { key: readability-identifier-naming.ConstexprVariableCase, value: UPPER_CASE }
+

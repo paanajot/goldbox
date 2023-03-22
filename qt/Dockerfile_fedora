@@ -1,0 +1,33 @@
+############################################################
+FROM fedora:35 AS final-qt
+
+WORKDIR /workdir
+
+### basic packages
+RUN dnf install \
+    vim gcc-c++ findutils \
+    -y
+
+### Qt dependencies
+RUN dnf install \
+    libXcomposite-devel libXext-devel libXrender-devel libxkbcommon-x11-devel \
+    fontconfig-devel dbus-devel libwayland-cursor mesa-libGLU-devel \
+    llvm-devel clang-devel perl \
+    -y
+
+### Qt6 installation. qtaccount.ini with credentials required when building image
+ADD qtaccount.ini /root/.local/share/Qt/qtaccount.ini
+ADD https://download.qt.io/archive/online_installers/4.0/qt-unified-linux-x64-4.0.1-1-online.run ./qtinstaller
+
+RUN chmod +x ./qtinstaller && \
+    ./qtinstaller in qt.qt6.624.gcc_64 qt.qt6.624.addons.qtserialport \
+    qt.qt6.624.addons.qtwebsockets qt.qt6.624.addons.qtimageformats qt.tools.cmake \
+    --auto-answer telemetry-question=Yes --default-answer --accept-licenses \
+    --no-force-installations --no-default-installations --accept-obligations --confirm-command \
+    -t /opt/Qt && \
+    rm /workdir/qtinstaller
+
+ENV PATH="/opt/Qt/6.2.4/gcc_64/bin:/opt/Qt/Tools/CMake/bin:${PATH}"
+ENV CMAKE_PREFIX_PATH="/opt/Qt/6.2.4/gcc_64/lib/cmake"
+ENV Qt6_DIR="/opt/Qt/6.2.4/gcc_64/lib/cmake"
+ENV LD_LIBRARY_PATH="/opt/Qt/6.2.4/gcc_64/lib"

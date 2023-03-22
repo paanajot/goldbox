@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  set_finder:
+    volumes:
+      - home:/home
+      - .:/repo
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /dev/:/dev/
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    tty: true
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: host
+    user: $DOCKER_USER
+    image: panajot/set_finder:latest
+    container_name: set_finder
+
+  set_finder_poc:
+    volumes:
+      - poc_home:/home
+      - ./poc:/repo
+      - ./data:/repo/data
+      - ./third_party:/repo/third_party
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /dev/:/dev/
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: host
+    tty: true
+    user: $DOCKER_USER
+    image: panajot/set_finder_poc:latest
+    container_name: set_finder_poc
+
+volumes:
+  home:
+  poc_home:

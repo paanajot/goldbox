@@ -1,0 +1,17 @@
+[
+    { include: [ "<cxxabi.h>", public, "<future>", public ] },
+    { include: [ "<memory>", public, "<gtest/gtest.h>", public ] },
+    { include: ["@<gtest/gtest-.*>", "private", "<gtest/gtest.h>", "public"] },
+    { include: ["\"gtest/gtest_pred_impl.h\"", "private", "<gtest/gtest.h>", "public"] },
+    { include: ["\"box/unique_ptr_impl.h\"", "private", "\"box/unique_ptr.h\"", "public"] },
+    { include: ["<box/unique_ptr_impl.h>", "private", "<box/unique_ptr.h>", "public"] },
+    { include: ["\"box/optional_impl.h\"", "private", "\"box/optional.h\"", "public"] },
+    { include: ["<box/optional_impl.h>", "private", "<box/optional.h>", "public"] },
+    { include: ["\"box/tuple_impl.h\"", "private", "\"box/tuple.h\"", "public"] },
+    { include: ["<box/tuple_impl.h>", "private", "<box/tuple.h>", "public"] },
+    { include: ["<gmock/gmock-function-mocker.h>", "private", "<gmock/gmock.h>", "public"] },
+    { include: ["<gmock/gmock-spec-builders.h>", "private", "<gmock/gmock.h>", "public"] },
+    { include: ["<gmock/gmock-actions.h>", "private", "<gmock/gmock.h>", "public"] },
+    { include: ["<gmock/gmock-matchers.h>", "private", "<gmock/gmock.h>", "public"] },
+    { include: ["<gmock/gmock-nice-strict.h>", "private", "<gmock/gmock.h>", "public"] }
+]

@@ -1,0 +1,28 @@
+--file=.\generated_files\testText1000\testText1000.bin --output=.\generated_files\testText1000 --headerfile=_testText1000.h --identifier=testText1000  --chunksize=450 --override
+--file=.\generated_files\testSequential1000\testSequential1000.bin --output=.\generated_files\testSequential1000 --headerfile=_testSequential1000.h --identifier=testSequential1000  --chunksize=180 --override
+--file=C:\Temp\foobar.bin --output=C:\Temp --headerfile=_testFoo.h --identifier=testFoo --override
+--file=C:\Temp\foobar.bin --output=C:\Temp --headerfile=_testFoo.h --identifier=testFoo --override --noheader
+--dir=D:\Temp\foobar --output=C:\Temp\foobar --override –noheader
+--file=..\..\test\bin2cpp_unittest\generated_files\testIssue28\testIssue28.bin --output=..\..\test\bin2cpp_unittest\generated_files\testIssue28 --headerfile=_testIssue28.h --identifier=testIssue28 --managerfile=FileManager.h --override
+--file=..\..\test\bin2cpp_unittest\generated_files\testIssue28\testIssue28.bin --output=..\..\test\bin2cpp_unittest\generated_files\testIssue28 --headerfile=_testIssue28.h --identifier=testIssue28 --managerfile=FileManager.h --override
+--file=..\..\test\bin2cpp_unittest\generated_files\testSequential1000\testSequential1000.bin --headerfile="generated/foo-data.h" --output=. --identifier=TestLongPath
+--file=..\..\test\bin2cpp_unittest\generated_files\testIssue28\testIssue28.bin --headerfile="generated/foo-data.h" --output=. --identifier=TestLongPath --managerfile=generated/foo-manager47.h --registerfile --namespace=myspace47
+--file=..\..\test\bin2cpp_unittest\generated_files\testIssue47\testIssue47.bin --output=..\..\test\bin2cpp_unittest\generated_files\testIssue47 --headerfile=generated/_testIssue47.h --identifier=testIssue47 --managerfile=generated/FileManager47.h --registerfile --namespace=myspace47 --override
+--file=..\..\test\bin2cpp_unittest\generated_files\testIssue50\testIssue50.bin --output=..\..\test\bin2cpp_unittest\generated_files\testIssue50 --headerfile=_testIssue50.h --identifier=testIssue50 --managerfile=FileManager50.h --registerfile --namespace=myspace50 --override
+
+--file=..\..\test\bin2cpp_unittest\generated_files\testSequential1000\testSequential1000.bin --headerfile="generated/foo-data.h" --output=. --identifier=TestLongPath --managerfile=generated/foo-manager47.h --registerfile --namespace=myspace47
+
+--dir=D:\Temp\issue56\css --output=D:\Temp\issue56\output
+--dir=..\..\test\bin2cpp_unittest\generated_files\testIssue56a\input_files --output=..\..\test\bin2cpp_unittest\generated_files\testIssue56a\compiled_sources
+--dir=..\..\test\bin2cpp_unittest\generated_files\testIssue56b\input_files\www --output=..\..\test\bin2cpp_unittest\generated_files\testIssue56b\generated_sources --namespace=issue56b --override
+--dir=..\..\test\bin2cpp_unittest\generated_files\testKeepDirectories\input_files\www --output=..\..\test\bin2cpp_unittest\generated_files\testKeepDirectories\generated_sources --override --keepdirs
+
+--file=D:\Temp\bin2cpp\issue51\input_files\IMG_0001.jpg --output=D:\Temp\bin2cpp\issue51\generated_sources --headerfile="IMG_0001.h" --identifier=testIssue51 --namespace=testIssue51 --managerfile=FileManager51.h --override --reportedfilepath=foo\bar\IMG_0001.h
+--dir=D:\Temp\bin2cpp\testIssue56b\input_files\www --output=D:\Temp\bin2cpp\testIssue56b\generated_sources --namespace=testIssue51 --managerfile=FileManager51.h --override
+
+--file=..\..\test\bin2cpp_unittest\generated_files\testSequential1000\testSequential1000.bin --plainoutput --chunksize=50
+--managerfile=MyManager.h --output=generated_files --override
+
+--file=..\..\test\bin2cpp_unittest\generated_files\testText1000\testText1000.bin --output=. --override
+
+--noheader --dir=..\..\test\bin2cpp_unittest\generated_files\testIssue56a\input_files --output=..\..\test\bin2cpp_unittest\generated_files\testIssue56a\compiled_sources --chunksize=200 --managerfile=FileManager56a.h --registerfile --namespace=issue56a --override

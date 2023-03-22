@@ -1,0 +1,1 @@
+./bin2cpp --file=/repo/set_finder/core/models/fdeep_color_detector.json --output=. --identifier=ColorModel --baseclass=ColorModel --override

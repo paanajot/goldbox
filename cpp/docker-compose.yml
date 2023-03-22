@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  goldbox_cpp:
+    volumes:
+      - home:/home
+      - .:/repo
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+    tty: true
+    user: $DOCKER_USER
+    image: panajot/cpp:latest
+    container_name: cpp
+
+volumes:
+  home:
