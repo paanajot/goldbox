@@ -21,8 +21,4 @@ public:
 
 private:
     Image generate_gray_card(const CardPreprocessor& preprocessor) const;
-
-    template <typename Comparator>
-    std::pair<uint16_t, uint16_t>
-    get_hist_range(cv::Mat1f histogram, uint16_t begin, uint16_t end, Comparator comparator) const;
 };

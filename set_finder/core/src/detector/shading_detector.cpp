@@ -7,6 +7,7 @@
 #include <functional>
 #include <numeric>
 
+#include "utils/hist_utils.h"
 #include "utils/logger.h"
 
 namespace
@@ -27,7 +28,6 @@ constexpr int CANNY_TH2 = 120;
 constexpr uint16_t SUM_RANGE = 2;
 
 constexpr double OUTLINED_TH = 0.4; // works with 0.3 - 0.5
-constexpr uint16_t HIST_TH = 100;
 } // namespace
 
 Feature ShadingDetector::detect_feature(const CardPreprocessor& preprocessor) const
@@ -67,9 +67,9 @@ Feature ShadingDetector::detect_feature(const CardPreprocessor& preprocessor) co
     cv::calcHist(&roi, 1, channels, {}, histogram, 1, hist_size, ranges);
 
     const auto [left_x, right_x] =
-        get_hist_range(histogram, 0, hist_size[0], std::greater_equal<uint16_t>());
+        get_hist_range(histogram, std::greater_equal<uint16_t>(), 0, hist_size[0]);
     const auto [left_x_2, right_x_2] =
-        get_hist_range(histogram, left_x, right_x, std::less_equal<uint16_t>());
+        get_hist_range(histogram, std::less_equal<uint16_t>(), left_x, right_x);
 
     const auto is_valid = [&](const auto& x) {
         return 0 < (x - SUM_RANGE) && hist_size[0] > (x + SUM_RANGE);
@@ -111,27 +111,4 @@ Image ShadingDetector::generate_gray_card(const CardPreprocessor& preprocessor) 
     Image gray_card{};
     cv::cvtColor(bilateral_card, gray_card, cv::COLOR_BGR2GRAY);
     return gray_card;
-}
-
-template <typename Comparator>
-std::pair<uint16_t, uint16_t> ShadingDetector::get_hist_range(cv::Mat1f histogram,
-                                                              uint16_t begin,
-                                                              uint16_t end,
-                                                              Comparator comparator) const
-{
-    uint16_t left_x{}, right_x{};
-    for(uint16_t i = begin; i < end; ++i)
-    {
-        const auto histogram_value = static_cast<uint32_t>(*histogram[i]);
-        if(comparator(histogram_value, HIST_TH))
-        {
-            if(left_x == 0)
-            {
-                left_x = i;
-            }
-            right_x = i;
-        }
-    }
-
-    return {left_x, right_x + 1};
 }

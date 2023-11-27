@@ -201,7 +201,7 @@ std::vector<std::pair<Centroid, Image>> SetDebugger::generate_card_images(const 
     return card_imgs;
 }
 
-// NOLINTBEGIN
+// NOLINTBEGIN [bugprone-easily-swappable-parameters]
 void draw_detected_card(Image& card_img,
                         uint16_t number_of_shapes,
                         uint16_t color_feature,

@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  qt_for_mcu:
+    volumes:
+      - home:/home
+      - .:/repo
+      - ./qtaccount.ini:/home/panajot/.local/share/Qt/qtaccount.ini
+      - ./qtlicenses.ini:/home/panajot/.local/share/Qt/qtlicenses.ini
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /dev/:/dev/
+    tty: true
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: host
+    user: ${USER}
+    image: ${USER}/qt_for_mcu:latest
+    container_name: qt_for_mcu
+
+volumes:
+  home:

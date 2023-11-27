@@ -2,6 +2,7 @@
 #include "corners_helper.h"
 
 #include "common/types.h"
+#include "utils/logger.h"
 
 #include <algorithm>
 #include <opencv2/core.hpp>
@@ -50,9 +51,6 @@ std::vector<Corners> CornersHelper::generate_corners(const ImageSize& image_size
 
         Corners corners{};
         cv::goodFeaturesToTrack(hull_img, corners, MAX_CORNERS, QUALITY_LEVEL, MIN_DISTANCE);
-
-        if(corners.size() != 4)
-            return {};
 
         all_corners.emplace_back(corners);
     }

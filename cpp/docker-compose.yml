@@ -9,7 +9,7 @@ services:
       - /etc/shadow:/etc/shadow:ro
     tty: true
     user: $DOCKER_USER
-    image: panajot/cpp:latest
+    image: panajot/cpp_user:latest
     container_name: cpp
 
 volumes:

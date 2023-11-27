@@ -1,46 +1,12 @@
-FROM panajot/cpp AS functional_plus
-RUN cd /workdir && \
-    git clone -b 'v0.2.18-p0' --single-branch --depth 1 https://github.com/Dobiasd/FunctionalPlus && \
-    cd FunctionalPlus && \
-    mkdir -p build && cd build && \
-    cmake .. && make && make install
-
-FROM panajot/cpp AS eigen
-RUN cd /workdir && \
-    git clone -b '3.4.0' --single-branch --depth 1 https://gitlab.com/libeigen/eigen.git && \
-    cd eigen && \
-    mkdir -p build && cd build && \
-    cmake .. && make && sudo make install
-
-FROM panajot/cpp AS json
-RUN cd /workdir && \
-    git clone -b 'v3.10.5' --single-branch --depth 1 https://github.com/nlohmann/json && \
-    cd json && \
-    mkdir -p build && cd build && \
-    cmake -DJSON_BuildTests=OFF .. && make && make install
-
-FROM panajot/cpp AS set_finder
+FROM panajot/cpp_user AS set_finder
 
 ### config
 ARG DEBIAN_FRONTEND=noninteractive
 ARG UID=1000
 ARG USERNAME=dev
 
-# frugally-deep dependencies
-COPY --from=functional_plus /usr/local/include/fplus /usr/local/include/fplus
-COPY --from=functional_plus /usr/local/lib/cmake/FunctionalPlus /usr/local/lib/cmake/FunctionalPlus
-COPY --from=eigen /usr/local/include/eigen3 /usr/local/include/eigen3
-COPY --from=eigen /usr/local/share/eigen3 /usr/local/share/eigen3
-COPY --from=json /usr/local/include/nlohmann /usr/local/include/nlohmann
-COPY --from=json /usr/local/lib/cmake/nlohmann_json /usr/local/lib/cmake/nlohmann_json
-
-RUN sudo ln -s /usr/local/include/eigen3/Eigen /usr/local/include/Eigen && \
-    cd /workdir && \
-    git clone https://github.com/Dobiasd/frugally-deep && \
-    cd frugally-deep && \
-    mkdir -p build && cd build && \
-    cmake .. && make && make install && \
-    cd ../.. && rm -rf frugally-deep
+WORKDIR /workdir
+RUN chown -R ${USERNAME}:${USERNAME} $(pwd)
 
 ### Qt dependencies
 RUN apt-get update && apt-get install --no-install-recommends \
@@ -48,24 +14,6 @@ RUN apt-get update && apt-get install --no-install-recommends \
     libxcomposite-dev libwayland-cursor0 libglu1-mesa-dev libegl-dev libxcb-icccm4 libxcb-keysyms1 \
     libxcb-randr0 libxcb-shape0 libxcb-xinerama0 -y && \
     rm -rf /var/lib/apt/lists/*
-
-### Qt for Android
-# ADD qtaccount.ini /root/.local/share/Qt/qtaccount.ini
-# ADD https://download.qt.io/archive/online_installers/4.5/qt-unified-linux-x64-4.5.0-online.run ./qtinstaller
-
-# RUN chmod +x /workdir/qtinstaller && \
-#     /workdir/qtinstaller in qt.qt6.641.android qt.qt6.641.addons.qtmultimedia qt.tools.qtcreator \
-#     --auto-answer telemetry-question=Yes --default-answer --accept-licenses \
-#     --no-force-installations --no-default-installations --accept-obligations --confirm-command \
-#     -t /opt/Qt && \
-#     rm /workdir/qtinstaller
-
-# Qt license
-# COPY .qt-license /workdir/.qt-license
-# ENV QT_LICENSE_FILE=/workdir/.qt-license
-
-# Workaround for bug: https://bugreports.qt.io/browse/QTCREATORBUG-24534
-# RUN sed -e "s/, \"cmdline-tools;latest\"//g" -i.backup /opt/Qt/Tools/QtCreator/share/qtcreator/android/sdk_definitions.json
 
 # JDK
 RUN wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" \
@@ -111,13 +59,35 @@ RUN wget https://sourceforge.net/projects/opencvlibrary/files/4.6.0/opencv-4.6.0
     rm opencv-4.6.0-android-sdk.zip
 
 ENV OPENCV_ANDROID="/workdir/OpenCV-android-sdk"
+ENV SET_FINDER_CORE="/workdir/set_finder_core"
+ENV YUV_CONVERTER="/workdir/libyuv_dir"
 
 ### opencv for x86_64-linux-gnu
 # TODO: install the same version as above
 RUN apt-get update && apt-get install libopencv-dev libcanberra-gtk3-module -y && \
     rm -rf /var/lib/apt/lists/*
 
-# TODO: optimize chown
-RUN chown -R ${USERNAME}:${USERNAME} /workdir/
-ENV PATH="/workdir/jdk-17.0.1/bin:/opt/Qt/Tools/QtCreator/bin:${PATH}"
-############################################################
+### Debugger
+RUN apt-get update && apt-get install --no-install-recommends gdb -y && \
+    rm -rf /var/lib/apt/lists/*
+
+### Conan
+ADD conan2/profiles/ /workdir/conan2/profiles/
+RUN pip install conan && conan config install /workdir/conan2/profiles/
+
+# libyuv - dependency to android project
+RUN cd /workdir && \
+    git clone -b 'stable' --single-branch --depth 1 https://chromium.googlesource.com/libyuv/libyuv
+
+ADD libyuv_install_android.sh /workdir/libyuv/libyuv_install_android.sh
+RUN cd /workdir/libyuv/ && \
+    ./libyuv_install_android.sh && \
+    rm -rf /workdir/libyuv/
+
+# conan install frugally-deep with dependencies
+ADD third_party/frugally-deep /workdir/third_party/frugally-deep
+RUN cd /workdir/third_party/frugally-deep && \
+    conan create . -b=missing && \
+    rm -rf /workdir/third_party/
+
+ENV PATH="/workdir/jdk-17.0.1/bin:/home/${USERNAME}/.local/bin:${PATH}"

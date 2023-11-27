@@ -14,7 +14,7 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
     network_mode: host
-    user: $DOCKER_USER
+    user: ${USER}
     image: panajot/set_finder:latest
     container_name: set_finder
 
@@ -34,7 +34,7 @@ services:
       - DISPLAY=${DISPLAY}
     network_mode: host
     tty: true
-    user: $DOCKER_USER
+    user: ${USER}
     image: panajot/set_finder_poc:latest
     container_name: set_finder_poc
 

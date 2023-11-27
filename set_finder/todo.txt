@@ -1,4 +1,3 @@
-- change the color of the lines depending on the status
 - improve shading_detector efficiency
 - optimize color_detector working time
 - optimize cards_extrcator working time

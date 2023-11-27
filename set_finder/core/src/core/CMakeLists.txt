@@ -24,8 +24,3 @@ target_include_directories(
   core PUBLIC "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>"
               "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
-
-set(header_files ${CMAKE_CURRENT_SOURCE_DIR}/set_processor.h
-                 ${CMAKE_SOURCE_DIR}/src/utils/logger.h
-)
-set_target_properties(core PROPERTIES PUBLIC_HEADER "${header_files}")

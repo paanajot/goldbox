@@ -8,7 +8,7 @@ ARG CMAKELANG_VERSION=0.6.13
 
 ### multi-stage builds
 ### install and configure toolchain
-FROM ubuntu:22.04 AS base
+FROM ubuntu:22.04 AS cpp_base
 
 # You use this mode when you need zero interaction while installing or upgrading the system via apt.
 ARG DEBIAN_FRONTEND=noninteractive
@@ -20,7 +20,6 @@ ENV PATH="${PATH}:/usr/lib/llvm-${CLANG_VERSION}/bin/"
 WORKDIR /workdir
 
 ### basic packages
-# Building gcc from sources takes a long time, therefore I decided to install it from system packages
 RUN apt-get update && apt-get install --no-install-recommends \
     cmake g++-${GCC_VERSION} git build-essential ca-certificates -y && \
     rm -rf /var/lib/apt/lists/*
@@ -43,7 +42,7 @@ RUN apt-get update && apt-get install --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 ### include what you use tool
-FROM base AS iwyu
+FROM cpp_base AS iwyu
 ARG CLANG_VERSION
 RUN mkdir /iwyu && \
     cd /iwyu && \
@@ -55,7 +54,7 @@ RUN mkdir /iwyu && \
     make
 
 ### cppcheck
-FROM base AS cppcheck
+FROM cpp_base AS cppcheck
 ARG CPPCHECK_VERSION
 RUN cd /workdir && \
     git clone https://github.com/danmar/cppcheck.git --single-branch --branch ${CPPCHECK_VERSION} && \
@@ -70,7 +69,7 @@ RUN cd /workdir && \
 
 ### google test && google mock
 ### https://github.com/google/googletest/blob/main/googletest/README.md
-FROM base AS googletest
+FROM cpp_base AS googletest
 ARG GTEST_VERSION
 RUN git clone https://github.com/google/googletest.git --single-branch --branch ${GTEST_VERSION} && \
     cd googletest && \
@@ -85,7 +84,7 @@ RUN git clone https://github.com/google/googletest.git --single-branch --branch 
 ### bloaty - a size profiler for binaries
 ### '-d compileunits' option doesn't work with g++11, it works with g++9
 ###  https://github.com/google/bloaty
-FROM base AS bloaty
+FROM cpp_base AS bloaty
 RUN apt-get update && apt-get install --no-install-recommends libz-dev -y
 RUN git clone https://github.com/google/bloaty.git --single-branch --recursive && \
     cd bloaty && \
@@ -94,7 +93,7 @@ RUN git clone https://github.com/google/bloaty.git --single-branch --recursive &
 
 ############################################################
 ### final image
-FROM base AS final
+FROM cpp_base AS cpp
 COPY --from=cppcheck /usr/local/bin/cppcheck /usr/local/bin/cppcheck
 COPY --from=cppcheck /usr/local/share/Cppcheck /usr/local/share/Cppcheck
 COPY --from=googletest /usr/local/include/ /usr/local/include/
@@ -103,25 +102,33 @@ COPY --from=iwyu /iwyu /iwyu
 COPY --from=bloaty /usr/local/lib/Bloaty /usr/local/lib/Bloaty
 COPY --from=bloaty /usr/local/bin/bloaty /usr/local/bin/bloaty
 
-### install goldbox lib
-ADD lib /workdir/
-RUN cd /workdir && \
-    ./install.sh && \
-    rm -rf /workdir
-
 ############################################################
 ### install and configure dev utils
-FROM final AS cpp
-
-RUN apt-get update && apt-get install --no-install-recommends \
-    sudo vim -y && \
-    rm -rf /var/lib/apt/lists/*
+FROM cpp AS cpp_user
 
 ### config
 ARG UID=1000
 ARG USERNAME=dev
 
-RUN useradd -l -m $USERNAME -u $UID
+### install useful tools
+RUN apt-get update && apt-get install --no-install-recommends \
+    sudo vim less -y && \
+    rm -rf /var/lib/apt/lists/*
+
+### adding user
+RUN useradd -m -s /bin/bash -U -u $UID $USERNAME && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers && \
+    chmod 0440 /etc/sudoers && \
+    chmod g+w /etc/passwd
+
+WORKDIR /workdir
+RUN chown -R ${USERNAME}:${USERNAME} $(pwd)
+
+### install goldbox lib
+ADD lib /workdir/
+RUN cd /workdir && \
+    ./install.sh && \
+    rm -rf /workdir
 
 ### avoiding VS code extension reinstalls
 RUN mkdir -p /home/$USERNAME/.vscode-server/extensions \

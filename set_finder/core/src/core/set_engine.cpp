@@ -10,6 +10,7 @@
 
 #include <opencv2/imgproc.hpp>
 
+#include <map>
 #include <thread>
 
 namespace
@@ -17,6 +18,12 @@ namespace
 const auto get_blind_spot = [](const auto width, const auto height) {
     return (width - height) / 2;
 };
+
+const std::map<EngineTask, cv::Scalar> task_to_color{
+    {EngineTask::NONE, cv::Scalar{0, 185, 227}},
+    {EngineTask::OPTIMIZE, cv::Scalar{0, 185, 227}},
+    {EngineTask::GENERATE_SET, cv::Scalar{0, 227, 169}},
+    {EngineTask::UPDATE_CONTOURS, cv::Scalar{0, 255, 0}}};
 } // namespace
 
 void SetEngine::run(uint8_t* image_buffer, int width, int height)
@@ -117,7 +124,7 @@ Image SetEngine::update_set(const Image& img)
 void SetEngine::draw_limit_lines(const Image& frame, int width, int height)
 {
     constexpr int THICKNESS = 3;
-    const cv::Scalar color(0, 255, 0);
+    const auto color = task_to_color.at(m_supervisor.get_current_task());
     const auto blind_spot_width = get_blind_spot(width, height);
 
     cv::line(frame,

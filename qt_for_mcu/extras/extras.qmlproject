@@ -1,0 +1,65 @@
+import QmlProject 1.3
+
+Project {
+    projectRootPath: "."
+
+    InterfaceFiles {
+        files: [
+           "projectlistmodel.h",
+            "MealPlanListModel.h"
+        ]
+    }
+
+    ImageFiles {
+        files: [
+            "assets/recipeInstructionsBG.png",
+            "assets/onYourMenuBG.png",
+            "assets/onMenuImagePlaceholder.png",
+            "assets/onMealCookingTime.png",
+            "assets/onMealHealthScore.png",
+            "assets/healthScoreWidget/homeHealthScoreBG.png",
+            "assets/healthScoreWidget/homeHealthScoreStageNames.png",
+            "assets/healthScoreWidget/homeHealthscoreStatsCircleBar_state_property_1_GoodState.png",
+            "assets/healthScoreWidget/homeHealthscoreStatsCircleBar_state_property_1_GreatState.png",
+            "assets/healthScoreWidget/homeHealthscoreStatsCircleBar_state_property_1_ImbalancedState.png",
+            "assets/healthScoreWidget/homeHealthscoreStatsCircleBar_state_property_1_OffTrackState.png",
+            "assets/healthScoreWidget/homeHealthscoreStatsCircleBar_state_property_1_OptimalState.png",
+            "assets/swipeButtonBG.png"
+        ]
+    }
+
+    QmlFiles {
+        files: [
+            "extras.qml",
+            "common/Scrollbar.qml",
+            "common/VersaScrollbar.qml",
+            "common/VersaHorizontalScrollbar.qml",
+            "common/SwipeButton.qml",
+            "KeyboardPage.qml",
+            "ProjectListPage.qml",
+            "Tumbler.qml",
+            "LevelBar.qml",
+            "ThreePartsLevelBar.qml",
+            "LiveMeasureBar.qml",
+            "ProjectListDynamicText.qml",
+            "Stepper.qml",
+            "HorizontalListView.qml",
+            "CircularLevel.qml",
+            "HealthScoreWidget.qml",
+            "OnYourMenuWidget.qml",
+            "FlickableWrapper.qml",
+            "common/SwipeButtonBug.qml"
+        ]
+    }
+
+	ModuleFiles {
+		MCU.qulModules: ["Shapes"]
+	}
+
+    ModuleFiles {
+        files: [
+            "modules/versa_keyboard/keyboard_module.qmlproject",
+            // "modules/filter_buttons/filter_buttons_module.qmlproject",
+        ]
+    }
+}

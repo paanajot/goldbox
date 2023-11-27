@@ -2,14 +2,14 @@
 
 if [ $# -ne 1 ]
 then
-    printf "docker_build.sh requires exactly 1 argument [cpp, py, set_finder, qt, all]\n"
+    printf "docker_build.sh requires exactly 1 argument [cpp, py, set_finder, qt, qt_for_mcu, all]\n"
     exit 1
 fi
 
 # Build image with BuildKit, new, more powerful build engine
 export DOCKER_BUILDKIT=1
 
-declare -A folders=(["cpp"]="cpp" ["set_finder"]="set_finder" ["set_finder_poc"]="set_finder/poc" ["qt"]="qt")
+declare -A folders=(["cpp_user"]="cpp" ["set_finder"]="set_finder" ["set_finder_poc"]="set_finder/poc" ["qt"]="qt" ["qt_for_mcu"]="qt_for_mcu" ["ue"]="unreal_engine")
 
 build () {
     echo "!!! Building $1"

@@ -38,13 +38,16 @@ std::vector<std::pair<Centroid, Image>> Extractor::extract_cards(const Image& so
     for(uint32_t i = 0; i < cards_corners.size(); ++i)
     {
         const auto& card_corners = cards_corners.at(i);
-        const auto centroid = get_centroid(filtered_contours.at(i));
+        if(card_corners.size() == 4)
+        {
+            const auto centroid = get_centroid(filtered_contours.at(i));
 
-        const auto warped_card = get_warped_card(source_img, card_corners);
-        const auto cropped_card =
-            Image(warped_card, cv::Rect(MARGINS, MARGINS, CROPPED_CARD_WIDTH, CROPPED_CARD_HEIGHT));
+            const auto warped_card = get_warped_card(source_img, card_corners);
+            const auto cropped_card = Image(
+                warped_card, cv::Rect(MARGINS, MARGINS, CROPPED_CARD_WIDTH, CROPPED_CARD_HEIGHT));
 
-        cards_img.emplace_back(std::pair<Centroid, Image>{centroid, cropped_card});
+            cards_img.emplace_back(std::pair<Centroid, Image>{centroid, cropped_card});
+        }
     }
 
     return cards_img;

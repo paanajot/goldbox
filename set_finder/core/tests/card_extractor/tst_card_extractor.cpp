@@ -55,4 +55,4 @@ TEST_P(CardExtractorTest, validate_number_of_cards)
 
 INSTANTIATE_TEST_SUITE_P(SizeOfExtractedCardsTest,
                          CardExtractorTest,
-                         testing::Values(expected_3_cards, expected_12_cards, expected_15_cards));
+                         testing::Values(expected_12_cards, expected_3_cards, expected_15_cards));

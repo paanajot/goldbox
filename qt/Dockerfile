@@ -10,6 +10,7 @@ RUN useradd -l -m $USERNAME -u $UID
 
 ENV CXX=/usr/bin/g++-${GCC_VERSION}
 WORKDIR /workdir
+RUN chown -R ${USERNAME}:${USERNAME} $(pwd)
 
 ### basic packages
 RUN apt-get update && apt-get install --no-install-recommends \
@@ -31,7 +32,7 @@ ENV PATH="/usr/lib/llvm-13/bin:${PATH}"
 RUN apt-get update && apt-get install --no-install-recommends \
     libxcb-glx0 libx11-xcb-dev libxrender-dev libxkbcommon-x11-0 libxkbcommon-x11-dev  libfontconfig libxcb-image0 \
     libxcb-render-util0 libxcomposite-dev libwayland-cursor0 libglu1-mesa-dev libegl-dev libxcb-icccm4 libxcb-keysyms1 \
-    libxcb-randr0 libxcb-shape0 libxcb-xinerama0 -y && \
+    libxcb-randr0 libxcb-shape0 libxcb-xinerama0 libxcb-cursor-dev -y && \
     rm -rf /var/lib/apt/lists/*
 
 ### Qt6 installation. qtaccount.ini with credentials required when building image
@@ -42,9 +43,10 @@ ADD qtaccount.ini /root/.local/share/Qt/qtaccount.ini
 ADD https://download.qt.io/archive/online_installers/4.0/qt-unified-linux-x64-4.0.1-1-online.run ./qtinstaller
 
 RUN chmod +x ./qtinstaller && \
-    ./qtinstaller in qt.qt6.624.gcc_64 qt.qt6.624.addons.qtserialport \
+    ./qtinstaller in qt.qt6.650.gcc_64 qt.qt6.624.gcc_64 qt.qt6.624.addons.qtserialport \
     qt.qt6.624.addons.qtwebsockets qt.qt6.624.addons.qtimageformats \
     qt.tools.cmake qt.tools.qtcreator qt.tools.qtcreator_gui \
+    qtdesignstudio preview.qt.tools.qtdesignstudio \
     --auto-answer telemetry-question=Yes --default-answer --accept-licenses \
     --no-force-installations --no-default-installations --accept-obligations --confirm-command \
     -t /opt/Qt && \
@@ -63,8 +65,6 @@ ENV Qt6_DIR="/opt/Qt/6.2.4/gcc_64/lib/cmake"
 # QStandardPaths: XDG_RUNTIME_DIR points to non-existing path '/tmp/runtime-panajot/', please create it with 0700 permissions.
 RUN mkdir -m 700 /tmp/runtime-${USERNAME}/ && chown $UID /tmp/runtime-${USERNAME}/
 ENV XDG_RUNTIME_DIR=/tmp/runtime-${USERNAME}/
-
-RUN chown -R ${USERNAME}:${USERNAME} /workdir/
 
 ### CodeChecker
 # RUN apt-get update && apt-get install --no-install-recommends \

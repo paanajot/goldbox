@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "/repo/third_party/frugally-deep/build/Release/generators/CMakePresets.json"
+    ]
+}

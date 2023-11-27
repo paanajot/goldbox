@@ -14,12 +14,21 @@ add_compile_options(-fPIC)
 set(OpenCV_STATIC ON)
 find_package(OpenCV REQUIRED)
 
+find_package(frugally_deep REQUIRED)
+
 add_subdirectory(src)
 
 add_executable(main main.cpp)
+add_executable(contours_drawer contours_drawer.cpp)
+
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(
   main PRIVATE ${OpenCV_LIBS} ${CMAKE_PROJECT_NAME}::core goldboxl::cxx20
+)
+
+target_link_libraries(
+  contours_drawer PRIVATE ${OpenCV_LIBS} ${CMAKE_PROJECT_NAME}::core
+                          goldboxl::cxx20
 )
 
 if(BUILD_TESTS)

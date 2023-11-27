@@ -36,7 +36,7 @@ services:
       # Run 'xhost local:root' before docker-compose if you want to run Gui apps as a root from container
       - DISPLAY=${DISPLAY}
     network_mode: host
-    image: qt-srv-56.intra.qt.io/docker/qtformcu/ci-linux-runner-master-stm32cubef7-devenv:35
+    image: qt-srv-56.intra.qt.io/docker/qtformcu/ci-linux-runner-master-stm32cubef7-devenv:38
     container_name: qul_stm32
     devices:
       - /dev/bus/:/dev/bus/

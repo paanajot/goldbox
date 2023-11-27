@@ -8,22 +8,14 @@ lucicfg.check_version("1.30.9")
 LIBYUV_GIT = "https://chromium.googlesource.com/libyuv/libyuv"
 LIBYUV_GERRIT = "https://chromium-review.googlesource.com/libyuv/libyuv"
 
-GOMA_BACKEND_RBE_PROD = {
-    "server_host": "goma.chromium.org",
-    "use_luci_auth": True,
+RECLIENT_CI = {
+    "instance": "rbe-webrtc-trusted",
+    "metrics_project": "chromium-reclient-metrics",
 }
 
-GOMA_BACKEND_RBE_ATS_PROD = {
-    "server_host": "goma.chromium.org",
-    "use_luci_auth": True,
-    "enable_ats": True,
-}
-
-# Disable ATS on Windows CQ/try.
-GOMA_BACKEND_RBE_NO_ATS_PROD = {
-    "server_host": "goma.chromium.org",
-    "use_luci_auth": True,
-    "enable_ats": False,
+RECLIENT_CQ = {
+    "instance": "rbe-webrtc-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
 }
 
 # Use LUCI Scheduler BBv2 names and add Scheduler realms configs.
@@ -69,6 +61,10 @@ luci.project(
         acl.entry(acl.BUILDBUCKET_OWNER, groups = ["project-libyuv-admins"]),
     ],
     bindings = [
+        luci.binding(
+            roles = "role/swarming.taskTriggerer",  # for LED tasks.
+            groups = "project-libyuv-admins",
+        ),
         luci.binding(
             roles = "role/configs.validator",
             users = "libyuv-try-builder@chops-service-accounts.iam.gserviceaccount.com",
@@ -195,26 +191,13 @@ luci.bucket(
 
 def get_os_dimensions(os):
     if os == "android":
-        return {"device_type": "bullhead"}
+        return {"device_type": "walleye"}
     if os == "ios" or os == "mac":
-        return {"os": "Mac-10.15", "cpu": "x86-64"}
+        return {"os": "Mac-12", "cpu": "x86-64"}
     elif os == "win":
         return {"os": "Windows-10", "cores": "8", "cpu": "x86-64"}
     elif os == "linux":
         return {"os": "Ubuntu-18.04", "cores": "8", "cpu": "x86-64"}
-    return {}
-
-def get_os_properties(os, try_builder = False):
-    if os == "android":
-        return {"$build/goma": GOMA_BACKEND_RBE_PROD}
-    elif os in ("ios", "mac"):
-        return {"$build/goma": GOMA_BACKEND_RBE_PROD}
-    elif os == "win" and try_builder:
-        return {"$build/goma": GOMA_BACKEND_RBE_NO_ATS_PROD}
-    elif os == "win":
-        return {"$build/goma": GOMA_BACKEND_RBE_ATS_PROD}
-    elif os == "linux":
-        return {"$build/goma": GOMA_BACKEND_RBE_ATS_PROD}
     return {}
 
 def libyuv_ci_builder(name, dimensions, properties, triggered_by):
@@ -254,7 +237,7 @@ def libyuv_try_builder(name, dimensions, properties, recipe_name = "libyuv/libyu
 
 def ci_builder(name, os, category, short_name = None):
     dimensions = get_os_dimensions(os)
-    properties = get_os_properties(os)
+    properties = {"$build/reclient": RECLIENT_CI}
 
     dimensions["pool"] = "luci.flex.ci"
     properties["builder_group"] = "client.libyuv"
@@ -265,7 +248,7 @@ def ci_builder(name, os, category, short_name = None):
 
 def try_builder(name, os, experiment_percentage = None):
     dimensions = get_os_dimensions(os)
-    properties = get_os_properties(os, try_builder = True)
+    properties = {"$build/reclient": RECLIENT_CQ}
 
     dimensions["pool"] = "luci.flex.try"
     properties["builder_group"] = "tryserver.libyuv"
