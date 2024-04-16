@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>images/cross.png</file>
-        <file>images/next_page.png</file>
-        <file>images/nought.png</file>
-        <file>images/previous_page.png</file>
-        <file>images/qt_logo.png</file>
-    </qresource>
-</RCC>

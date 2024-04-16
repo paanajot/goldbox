@@ -95,9 +95,9 @@ std::vector<Centroid> SetGenerator::update_set(const Image& image,
         const auto& min_distance_it =
             std::min_element(centroids.cbegin(), centroids.cend(), point_diff_comparison);
 
-        if(cv::norm(*min_distance_it - set_centroid) > CENTROID_DISTANCE_TH)
+        if((min_distance_it == centroids.cend()) ||
+           (cv::norm(*min_distance_it - set_centroid) > CENTROID_DISTANCE_TH))
         {
-            Logger::debug("centroid distance:", cv::norm(*min_distance_it - set_centroid));
             return {};
         }
 

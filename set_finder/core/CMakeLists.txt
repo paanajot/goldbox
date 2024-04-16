@@ -13,8 +13,7 @@ add_compile_options(-fPIC)
 # opencv package
 set(OpenCV_STATIC ON)
 find_package(OpenCV REQUIRED)
-
-find_package(frugally_deep REQUIRED)
+find_package(tensorflowlite REQUIRED)
 
 add_subdirectory(src)
 

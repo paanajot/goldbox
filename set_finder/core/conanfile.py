@@ -17,7 +17,7 @@ class SetFinderCoreRecipe(ConanFile):
     default_options = {"build_test": False, "disable_tools": True}
 
     def requirements(self):
-        self.requires("frugally_deep/1.0")
+        self.requires("tensorflow-lite/2.12.0")
 
     def layout(self):
         cmake_layout(self, build_folder='build/' + self.settings.get_safe("arch"))

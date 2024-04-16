@@ -14,7 +14,7 @@ target_link_libraries(
   PUBLIC ${OpenCV_LIBS}
          ${CMAKE_PROJECT_NAME}::model
          ${CMAKE_PROJECT_NAME}::utils
-         frugally_deep::frugally_deep
+         tensorflow::tensorflowlite
          goldboxl::cxx20
 )
 

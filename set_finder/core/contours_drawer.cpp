@@ -13,6 +13,19 @@ namespace
 constexpr int CONTOUR_IDX = -1;
 constexpr int THICKNESS = 2;
 const cv::Scalar color(0, 255, 0);
+
+void show_images(const cv::Mat& image1, const cv::Mat& image2)
+{
+    cv::Mat dst;
+    cv::hconcat(image1, image2, dst);
+    cv::namedWindow("contours", cv::WINDOW_AUTOSIZE);
+    cv::imshow("contours", dst);
+    while(true)
+    {
+        if((char)27 == (char)cv::waitKey(1)) // NOLINT
+            break;
+    }
+}
 } // namespace
 
 int main()
@@ -36,7 +49,7 @@ int main()
                 const auto& filtered_contours = Extractor{}.extract_contours(img, *boundaries);
                 cv::drawContours(filtered_img, filtered_contours, CONTOUR_IDX, color, THICKNESS);
 
-                show_image(filtered_img);
+                show_images(img, filtered_img);
             }
         }
     };

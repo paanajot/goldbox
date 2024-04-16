@@ -83,7 +83,6 @@ FilterOptimizer::Solution FilterOptimizer::generate_solution(const ImageFilter& 
 
 std::optional<Boundaries> FilterOptimizer::optimize(const Image& image)
 {
-    Logger::info("optimize!");
     const ImageFilter image_filter{image};
 
     if(m_solution)
@@ -196,8 +195,12 @@ FilterOptimizer::generate_initial_s_max_values(const ImageFilter& image_filter)
         negative_peaks.emplace_back(initial_right_s);
     }
 
-    m_s_step = std::ceil(static_cast<float>((negative_peaks.back() - negative_peaks.front())) /
-                         static_cast<float>(negative_peaks.size()));
+    if(!negative_peaks.empty())
+    {
+        m_s_step = std::ceil(static_cast<float>((negative_peaks.back() - negative_peaks.front())) /
+                             static_cast<float>(negative_peaks.size()));
+    }
+
     return negative_peaks;
 }
 
@@ -221,8 +224,11 @@ FilterOptimizer::generate_initial_v_min_values(const ImageFilter& image_filter)
         negative_peaks.insert(negative_peaks.cbegin(), initial_left_v);
     }
 
-    m_v_step = std::ceil(static_cast<float>((negative_peaks.back() - negative_peaks.front())) /
-                         static_cast<float>(negative_peaks.size()));
+    if(!negative_peaks.empty())
+    {
+        m_v_step = std::ceil(static_cast<float>((negative_peaks.back() - negative_peaks.front())) /
+                             static_cast<float>(negative_peaks.size()));
+    }
 
     return negative_peaks;
 }

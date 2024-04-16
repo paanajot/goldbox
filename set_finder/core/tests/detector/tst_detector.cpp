@@ -63,6 +63,7 @@ class DetectorTest : public testing::TestWithParam<TestData>
 
 TEST_P(DetectorTest, validate_feature)
 {
+    Logger::enable_color();
     const auto params = GetParam();
     const auto feature_number = params.feature_number;
     const auto detector = params.detector;

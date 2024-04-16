@@ -73,7 +73,7 @@ RUN apt-get update && apt-get install --no-install-recommends gdb -y && \
 
 ### Conan
 ADD conan2/profiles/ /workdir/conan2/profiles/
-RUN pip install conan && conan config install /workdir/conan2/profiles/
+RUN pip install conan==2.0.10 && conan config install /workdir/conan2/
 
 # libyuv - dependency to android project
 RUN cd /workdir && \
@@ -83,11 +83,5 @@ ADD libyuv_install_android.sh /workdir/libyuv/libyuv_install_android.sh
 RUN cd /workdir/libyuv/ && \
     ./libyuv_install_android.sh && \
     rm -rf /workdir/libyuv/
-
-# conan install frugally-deep with dependencies
-ADD third_party/frugally-deep /workdir/third_party/frugally-deep
-RUN cd /workdir/third_party/frugally-deep && \
-    conan create . -b=missing && \
-    rm -rf /workdir/third_party/
 
 ENV PATH="/workdir/jdk-17.0.1/bin:/home/${USERNAME}/.local/bin:${PATH}"

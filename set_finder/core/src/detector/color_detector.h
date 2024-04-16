@@ -5,10 +5,11 @@
 
 #include <memory>
 
-namespace fdeep
+namespace tflite
 {
-class model;
-}
+class FlatBufferModel;
+class Interpreter;
+} // namespace tflite
 
 class ColorDetector : public Detector
 {
@@ -19,5 +20,6 @@ public:
     Feature detect_feature(const CardPreprocessor& preprocessor) const override;
 
 private:
-    std::unique_ptr<fdeep::model> m_color_model;
+    std::unique_ptr<tflite::FlatBufferModel> m_color_model;
+    std::unique_ptr<tflite::Interpreter> m_interpreter;
 };

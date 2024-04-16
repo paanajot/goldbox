@@ -1,15 +1,35 @@
 
 #include "detector/color_detector.h"
 
-#include <fdeep/fdeep.hpp>
-
-#include "model/fdeep_color_detector.h"
+#include "model/color_detector_model.h"
 #include "utils/logger.h"
+
+#include <algorithm>
+
+#include <tensorflow/lite/interpreter.h>
+#include <tensorflow/lite/model.h>
+
+#include <tensorflow/lite/kernels/register.h>
+#include <tensorflow/lite/optional_debug_tools.h>
+#include <tensorflow/lite/string_util.h>
 
 ColorDetector::ColorDetector()
 {
-    m_color_model = std::make_unique<fdeep::model>(
-        fdeep::read_model_from_string(bin2cpp::getColorModel().getBuffer()));
+    m_color_model = tflite::FlatBufferModel::BuildFromBuffer(
+        bin2cpp::getColorModelFile().getBuffer(), bin2cpp::getColorModelFile().getSize());
+
+    if(!m_color_model)
+    {
+        throw std::runtime_error("Failed to load TFLite model");
+    }
+
+    tflite::ops::builtin::BuiltinOpResolver op_resolver;
+    tflite::InterpreterBuilder(*m_color_model, op_resolver)(&m_interpreter);
+
+    if(m_interpreter->AllocateTensors() != kTfLiteOk)
+    {
+        throw std::runtime_error("Failed to allocate tensors");
+    }
 }
 
 ColorDetector::~ColorDetector() = default;
@@ -17,12 +37,19 @@ ColorDetector::~ColorDetector() = default;
 Feature ColorDetector::detect_feature(const CardPreprocessor& preprocessor) const
 {
     const auto card_img = preprocessor.get_input_card();
-    const auto input = fdeep::tensor_from_bytes(card_img.ptr(),
-                                                static_cast<std::size_t>(card_img.rows),
-                                                static_cast<std::size_t>(card_img.cols),
-                                                static_cast<std::size_t>(card_img.channels()),
-                                                0.0f,
-                                                255.0f);
 
-    return m_color_model->predict_class({input}) + 1;
+    Image img{};
+    card_img.convertTo(img, CV_32FC4);
+
+    memcpy(m_interpreter->typed_input_tensor<float>(0), img.data, img.total() * img.elemSize());
+
+    if(m_interpreter->Invoke() != kTfLiteOk)
+    {
+        Logger::error("Invoke failed");
+        return 0;
+    }
+
+    const auto* results = m_interpreter->typed_output_tensor<float>(0);
+    const auto max_element_it = std::max_element(results, results + 3);
+    return std::distance(results, max_element_it) + 1;
 }

@@ -1,4 +1,4 @@
-add_library(model STATIC fdeep_color_detector.h fdeep_color_detector.cpp)
+add_library(model STATIC color_detector_model.h color_detector_model.cpp)
 
 set_target_properties(model PROPERTIES CXX_CLANG_TIDY "" CXX_CPPCHECK "")
 

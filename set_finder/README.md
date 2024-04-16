@@ -52,6 +52,11 @@ The core library contains six targets. Each target has a unique responsibility.
 
 <img src="doc/images/core_overview.png" width="50%" title="core overview">
 
+The project implements main.cpp that offers to use core library with a camera connected to the computer. Besides, a few debugging options are implemented to easily check how each algorithm works, e.g.:
+
+<img src="doc/images/contours.png" width="70%" title="contours">
+<img src="doc/images/card_detector.jpg" width="70%" title="card detector">
+
 ### Technologies
 - docker
 - c++20

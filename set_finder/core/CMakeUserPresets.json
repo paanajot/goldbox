@@ -4,10 +4,6 @@
         "conan": {}
     },
     "include": [
-        "/repo/core/build/x86/Debug/generators/CMakePresets.json",
-        "/repo/core/build/x86_64/Debug/generators/CMakePresets.json",
-        "/repo/core/build/armv7/Debug/generators/CMakePresets.json",
-        "/repo/core/build/armv8/Debug/generators/CMakePresets.json",
-        "/repo/core/build/x86_64/Release/generators/CMakePresets.json"
+        "/repo/core/build/x86_64/Debug/generators/CMakePresets.json"
     ]
 }

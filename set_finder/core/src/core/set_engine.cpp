@@ -19,6 +19,8 @@ const auto get_blind_spot = [](const auto width, const auto height) {
     return (width - height) / 2;
 };
 
+const cv::Size2i SIMPLIFIED_FRAME_SIZE{512, 512};
+
 const std::map<EngineTask, cv::Scalar> task_to_color{
     {EngineTask::NONE, cv::Scalar{0, 185, 227}},
     {EngineTask::OPTIMIZE, cv::Scalar{0, 185, 227}},
@@ -26,57 +28,62 @@ const std::map<EngineTask, cv::Scalar> task_to_color{
     {EngineTask::UPDATE_CONTOURS, cv::Scalar{0, 255, 0}}};
 } // namespace
 
+/* ANDROID
+    Image frame = Image(cv::Size(width, height), CV_8UC4, image_buffer);
+    // ...
+    Image bgr_frame{};
+    cv::cvtColor(roi_frame, bgr_frame, cv::COLOR_RGB2BGR);
+
+    auto result_img = run(roi_frame);
+    cv::cvtColor(result_img, roi_frame, cv::COLOR_BGR2RGB);
+*/
 void SetEngine::run(uint8_t* image_buffer, int width, int height)
 {
-    Image frame = Image(height, width, CV_8UC4, image_buffer);
+    Image frame = Image(cv::Size(width, height), CV_8UC3, image_buffer);
 
-    // TODO: move to java
     draw_limit_lines(frame, width, height);
 
     if(!m_supervisor.is_none())
     {
         const auto blind_spot_width = get_blind_spot(width, height);
         const auto roi = cv::Rect(blind_spot_width, 0, width - 2 * blind_spot_width, height);
-        auto roi_frame = Image(frame, roi);
-
-        Image bgr_frame{};
-        cv::cvtColor(roi_frame, bgr_frame, cv::COLOR_RGBA2BGR);
-
-        auto result_img = run(bgr_frame);
-        cv::cvtColor(result_img, roi_frame, cv::COLOR_BGR2RGBA);
+        std::ignore = run(Image(frame, roi));
     }
 }
 
-Image SetEngine::run(const Image& source_img)
+Image SetEngine::run(const Image& img)
 {
     switch(m_supervisor.fetch_task())
     {
-    case EngineTask::OPTIMIZE:
+    case EngineTask::OPTIMIZE: {
         Logger::info("optimize filter");
-        std::thread(&SetEngine::optimize_filter, this, source_img).detach();
+        std::thread(&SetEngine::optimize_filter, this, img.clone()).detach();
         break;
-
-    case EngineTask::GENERATE_SET:
+    }
+    case EngineTask::GENERATE_SET: {
         Logger::info("generate set");
-        std::thread(&SetEngine::generate_set, this, source_img).detach();
+        std::thread(&SetEngine::generate_set, this, img.clone()).detach();
         break;
-
-    case EngineTask::UPDATE_CONTOURS:
+    }
+    case EngineTask::UPDATE_CONTOURS: {
         Logger::info("update set");
-        return update_set(source_img);
+        return update_set(img);
         break;
+    }
     case EngineTask::NONE:
         break;
     }
-    return source_img;
+    return img;
 }
 
 void SetEngine::optimize_filter(const Image& img)
 {
     auto task = EngineTask::OPTIMIZE;
+    Image resized_img;
+    cv::resize(img, resized_img, SIMPLIFIED_FRAME_SIZE);
 
     static FilterOptimizer filter_optimizer{};
-    m_boundaries = filter_optimizer.optimize(img);
+    m_boundaries = filter_optimizer.optimize(resized_img);
     if(m_boundaries)
     {
         m_number_of_cards = filter_optimizer.get_contours_size();

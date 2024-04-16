@@ -10,7 +10,7 @@
 class SetEngine
 {
 public:
-    Image run(const Image& source_img);
+    Image run(const Image& img);
     void run(uint8_t* image_buffer, int width, int height);
 
 private:

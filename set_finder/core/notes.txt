@@ -1,24 +1,22 @@
-./bin2cpp --file=/repo/set_finder/core/models/fdeep_color_detector.json --output=. --identifier=ColorModel --baseclass=ColorModel --override
+# Embed tflite model
+./bin2cpp --file=/repo/data/models/color_detector_model.tflite --output=/repo/core/src/model --identifier=ColorModel --baseclass=ColorModel --override
 
 
 Conan commands:
 conan list "*"
 conan remove "*"
 
-Conan build process:
-# frugally-deep and its dependencies
-cd /repo/third_party/frugally-deep
-conan create .
-
 # libyuv
 cd /repo/third_party/libyuv
 ./libyuv_install_android.sh
 
 # set finder core
+conan config install /workdir/conan2/
 cd /repo/core
+
 ## android installation
 ./install_android.sh
 
 ## desktop installation
 conan build . -pr=default -b=missing
-conan build . -pr=default -b=missing -o disable_tools=True
+conan build . -pr=default -b=missing -o disable_tools=True -o build_test=True -s build_type=Debug
